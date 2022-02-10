@@ -5,6 +5,7 @@ import com.soleto.app.io.repository.UserRepository;
 import com.soleto.app.ui.shared.dto.UserDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -15,6 +16,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserRepository repository;
+
+    @Autowired
+    BCryptPasswordEncoder passwordEncoder;
 
     @Override
     @ExceptionHandler
@@ -36,8 +40,9 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = new UserEntity();
         BeanUtils.copyProperties(user, userEntity);
 
-        userEntity.setEncryptedPassword("testEncryptedPassword");
+        userEntity.setEncryptedPassword(passwordEncoder.encode(user.getPassword()));
         userEntity.setUserId(UUID.randomUUID().toString());
+
         return userEntity;
     }
 }
